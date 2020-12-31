@@ -1,9 +1,12 @@
 require('./config/config.js')
 
-const express = require('express')
-var bodyParser = require('body-parser')
 
-var app = express()
+const express = require('express')
+const mongoose = require('mongoose')
+
+const bodyParser = require('body-parser')
+
+const app = express()
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -11,41 +14,23 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
 
+app.use(require('./routes/usuario.js'))
 
-app.get('/usuario', function(req, res) {
-    res.json('Get usuario')
-})
 
-app.post('/usuario', function(req, res) {
+const conectionOptions = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true
+}
 
-    let body = req.body;
+mongoose.connect(process.env.URLDB, conectionOptions,
+    (err, res) => {
 
-    console.log(body)
-    if (body.nombre === undefined) {
+        if (err) throw err;
 
-        res.status(400).json({
-            ok: false,
-            mensaje: "El nombre es necesario"
-        })
+        console.log('Conexion a Base de datos establecida');
 
-    } else {
-        res.status(201).json({ persona: body })
-    }
-})
-
-app.put('/usuario/:id', function(req, res) {
-
-    let id = req.params.id;
-
-    res.json({
-        id
     })
-})
-
-
-app.delete('/usuario', function(req, res) {
-    res.json('delete usuario')
-})
 
 
 app.listen(process.env.PORT, () => {
